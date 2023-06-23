@@ -1,0 +1,125 @@
+local ____exports = {}
+local druid = require("druid.druid")
+local druid_const = require("druid.const")
+local druid_layout = require("druid.extended.layout")
+function ____exports.init(self)
+    Manager.init_gui()
+    druid.register("layout", druid_layout)
+    self.druid = druid.new(self)
+    self.druid:new_button(
+        "btnRestart",
+        function() return Scene.restart() end
+    )
+    self.druid:new_text("w1"):set_text_adjust(druid_const.TEXT_ADJUST.DOWNSCALE)
+    self.druid:new_text("w2")
+    local words = {
+        "вилка",
+        "спичка",
+        "губки",
+        "плевок",
+        "олень",
+        "валик",
+        "надобность",
+        "горечь",
+        "жидкость",
+        "крючок",
+        "мотать",
+        "виски",
+        "хроника",
+        "молния",
+        "картон",
+        "санки",
+        "организм",
+        "бухта",
+        "изменение",
+        "иерархия",
+        "текстиль",
+        "совесть",
+        "башмак",
+        "кратность",
+        "карман",
+        "жилище",
+        "гипс",
+        "психик",
+        "замочить",
+        "входной",
+        "рационализм",
+        "пионер",
+        "леность",
+        "реферат",
+        "классика",
+        "выполнение",
+        "туфли",
+        "визг",
+        "кинофильм",
+        "потребность",
+        "странность",
+        "чердак",
+        "комплект",
+        "трусики",
+        "воронка",
+        "любимчик",
+        "обернуть",
+        "ценность",
+        "тряпочный"
+    }
+    local src = gui.get_node("w1")
+    do
+        local x = 2
+        while x <= 5 do
+            local box = gui.get_node("box" .. tostring(x))
+            do
+                local i = 1
+                while i <= 10 do
+                    local n = gui.clone(src)
+                    gui.set_text(
+                        n,
+                        words[math.random(0, #words - 1) + 1]
+                    )
+                    gui.set_parent(n, box)
+                    gui.set_position(
+                        n,
+                        vmath.vector3(0, -40 * i, 0)
+                    )
+                    local ____self_1 = self.druid:new_text(n)
+                    local ____self_1_set_text_adjust_2 = ____self_1.set_text_adjust
+                    local ____temp_0
+                    if x == 2 then
+                        ____temp_0 = druid_const.TEXT_ADJUST.TRIM
+                    else
+                        ____temp_0 = druid_const.TEXT_ADJUST.DOWNSCALE
+                    end
+                    ____self_1_set_text_adjust_2(____self_1, ____temp_0)
+                    i = i + 1
+                end
+            end
+            x = x + 1
+        end
+    end
+    do
+        local x = 1
+        while x <= 5 do
+            x = x + 1
+        end
+    end
+end
+function ____exports.on_input(self, action_id, action)
+    return self.druid:on_input(action_id, action)
+end
+function ____exports.update(self, dt)
+    self.druid:update(dt)
+end
+function ____exports.on_message(self, message_id, message, sender)
+    Manager.on_message_gui(self, message_id, message, sender)
+    self.druid:on_message(message_id, message, sender)
+end
+function ____exports.final(self)
+    Manager.final()
+    self.druid:final()
+end
+init = ____exports.init
+on_input = ____exports.on_input
+update = ____exports.update
+on_message = ____exports.on_message
+final = ____exports.final
+
