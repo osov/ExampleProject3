@@ -12,7 +12,7 @@ function ____exports.init(self)
             default_style.scroll.WHEEL_SCROLL_SPEED = 10
             druid.set_default_style(default_style)
             Camera.set_go_prjection(-1, 1)
-            Scene.load("menu", true)
+            Scene.load("game", true)
             Scene.set_bg("#999")
         end,
         true

@@ -2,6 +2,13 @@ local ____exports = {}
 local druid = require("druid.druid")
 local druid_const = require("druid.const")
 local druid_layout = require("druid.extended.layout")
+local druid_style = require("druid.styles.default.style")
+local function on_long(_this, params, button, hold_time)
+    print("On long callback", hold_time)
+end
+local function on_hold(_this, params, button, hold_time)
+    print("On hold callback", hold_time, params)
+end
 function ____exports.init(self)
     Manager.init_gui()
     druid.register("layout", druid_layout)
@@ -10,6 +17,19 @@ function ____exports.init(self)
         "btnRestart",
         function() return Scene.restart() end
     )
+    self.druid:new_button(
+        "btnGame",
+        function() return Scene.load("game") end
+    )
+    druid_style.button.LONGTAP_TIME = 0.01
+    druid.set_default_style(druid_style)
+    local btn = self.druid:new_button(
+        "btnHome",
+        function() return print("click") end
+    )
+    btn.params = "btn_1"
+    btn.on_hold_callback:subscribe(on_hold)
+    btn.on_long_click:subscribe(on_long)
     self.druid:new_text("w1"):set_text_adjust(druid_const.TEXT_ADJUST.DOWNSCALE)
     self.druid:new_text("w2")
     local words = {

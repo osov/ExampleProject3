@@ -6,13 +6,19 @@
 import * as druid from 'druid.druid';
 import * as druid_const from 'druid.const';
 import * as druid_layout from 'druid.extended.layout';
-
+import * as druid_style from 'druid.styles.default.style';
 
 interface props {
     druid: DruidClass;
 }
 
+function on_long(_this: any, params: any, button: any, hold_time: number) {
+    print("On long callback", hold_time);
+}
 
+function on_hold(_this: any, params: any, button: any, hold_time: number) {
+    print("On hold callback", hold_time, params);
+}
 
 export function init(this: props): void {
     Manager.init_gui();
@@ -20,6 +26,15 @@ export function init(this: props): void {
     this.druid = druid.new(this);
 
     this.druid.new_button('btnRestart', () => Scene.restart());
+    this.druid.new_button('btnGame', () => Scene.load('game'));
+
+    druid_style.button.LONGTAP_TIME = 0.01;
+    druid.set_default_style(druid_style);
+    const btn = this.druid.new_button('btnHome', () => print('click'));
+    btn.params = 'btn_1';
+    btn.on_hold_callback.subscribe(on_hold);
+    btn.on_long_click.subscribe(on_long);
+
 
     this.druid.new_text('w1').set_text_adjust(druid_const.TEXT_ADJUST.DOWNSCALE);
     this.druid.new_text('w2');

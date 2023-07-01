@@ -25,7 +25,7 @@ export function init(this: props) {
 
         Camera.set_go_prjection(-1, 1);
 
-        Scene.load('menu', true);
+        Scene.load('game', true);
         Scene.set_bg('#999');
     }, true);
 }

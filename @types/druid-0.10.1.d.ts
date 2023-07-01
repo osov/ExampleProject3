@@ -57,6 +57,7 @@ interface DruidClass {
     new_blocker: (node: string) => DruidBlocker;
     new_text: (node: string | any, value?: string, adjust_type?: number) => DruidText;
     new_button: (node: string, cb: BtnCallback) => DruidButton;
+    new_hover: (node: string | any, cb: BtnCallback) => DruidHover;
     new_checkbox: (node: string, cb: BtnCallback, click_node?: string, init_state?: boolean) => DruidButton;
     new_scroll(scroll: string, container: string): DruidScroll;
     new_static_grid(parent: string, element: string, in_row: number): DruidGridVertical;
@@ -79,10 +80,23 @@ interface DruidBlocker {
     set_enabled: (state: boolean) => void;
 }
 
+interface DruidHover {
+
+}
 
 interface DruidButton {
     set_click_zone: (zone: node) => void;
     set_enabled: (state: boolean) => void;
+    on_hold_callback: IButtonField;
+    on_long_click: IButtonField;
+    style: any;
+    params: any;
+}
+
+type ISubscribeFnc = (_this: any, params: any, button: DruidButton, hold_time: number) => void;
+
+interface IButtonField {
+    subscribe: (fnc: ISubscribeFnc) => void;
 }
 
 interface DruidNode {
@@ -114,6 +128,9 @@ interface DruidInput extends DruidNode {
 }
 
 interface DruidStyles {
+    button: {
+        LONGTAP_TIME: number;
+    }
     scroll: {
         WHEEL_SCROLL_SPEED: number;
     }

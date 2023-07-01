@@ -1,0 +1,131 @@
+local ____lualib = require("lualib_bundle")
+local __TS__ArrayIncludes = ____lualib.__TS__ArrayIncludes
+local ____exports = {}
+local druid = require("druid.druid")
+local druid_style = require("druid.styles.default.style")
+local ____utils = require("utils.utils")
+local hex2rgba = ____utils.hex2rgba
+local hide_gui_list = ____utils.hide_gui_list
+local set_text = ____utils.set_text
+local show_gui_list = ____utils.show_gui_list
+local utf8 = require("utils.utf8")
+local active_nodes = {}
+local chars = ""
+local function add_char(n, params)
+    if __TS__ArrayIncludes(active_nodes, n) then
+        return
+    end
+    active_nodes[#active_nodes + 1] = n
+    chars = chars .. params
+    gui.set_color(
+        n,
+        hex2rgba("#e6e64d")
+    )
+end
+local function bind_button_hover(_this, node, params)
+    _this.druid:new_hover(
+        node,
+        function(g, is_enter)
+            if not is_enter then
+                return
+            end
+            add_char(node, params)
+        end
+    )
+end
+local function start_word()
+    active_nodes = {}
+    chars = ""
+end
+local function check_word()
+    if #chars == 0 then
+        return
+    end
+    set_text("finded_word", chars)
+    do
+        local i = 0
+        while i < #active_nodes do
+            gui.set_color(
+                active_nodes[i + 1],
+                hex2rgba("#fff")
+            )
+            i = i + 1
+        end
+    end
+    show_gui_list({"popup"})
+end
+function ____exports.init(self)
+    Manager.init_gui()
+    self.druid = druid.new(self)
+    druid_style.button.LONGTAP_TIME = 0.01
+    druid.set_default_style(druid_style)
+    self.druid:new_button(
+        "btnHome",
+        function() return Scene.load("menu") end
+    )
+    local chars = "йцукенгшщзхфывапролдджэячсмитьбю"
+    local template = gui.get_node("template_word")
+    local parent = gui.get_node("game_content")
+    local size = 8
+    local delta = 64 + 2
+    local offset = 5
+    do
+        local y = 0
+        while y < size do
+            do
+                local x = 0
+                while x < size do
+                    local index = math.random(
+                        1,
+                        utf8.len(chars)
+                    )
+                    local ch = utf8.sub(chars, index, index)
+                    local params = ch
+                    local n = gui.clone_tree(template)
+                    local np = n.template_word
+                    self.druid:new_text(n.text, ch)
+                    gui.set_parent(np, parent, false)
+                    gui.set_position(
+                        np,
+                        vmath.vector3(-540 / 2 + offset + x * delta, 0 - offset - y * delta, 0)
+                    )
+                    bind_button_hover(self, np, params)
+                    x = x + 1
+                end
+            end
+            y = y + 1
+        end
+    end
+    self.druid:new_blocker("popup")
+    self.druid:new_button(
+        "btnFind",
+        function() return hide_gui_list({"popup"}) end
+    )
+end
+function ____exports.on_input(self, action_id, action)
+    if action_id == ID_MESSAGES.MSG_TOUCH then
+        if action.pressed then
+            start_word()
+        elseif action.released then
+            check_word()
+        end
+    end
+    self.druid:on_input(action_id, action)
+end
+function ____exports.update(self, dt)
+    self.druid:update(dt)
+end
+function ____exports.on_message(self, message_id, message, sender)
+    Manager.on_message_gui(self, message_id, message, sender)
+    self.druid:on_message(message_id, message, sender)
+end
+function ____exports.final(self)
+    Manager.final()
+    self.druid:final()
+end
+init = ____exports.init
+on_input = ____exports.on_input
+update = ____exports.update
+on_message = ____exports.on_message
+final = ____exports.final
+
